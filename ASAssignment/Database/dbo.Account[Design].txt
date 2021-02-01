@@ -1,0 +1,15 @@
+﻿CREATE TABLE [dbo].[Account] (
+    [Id]      INT            IDENTITY (1, 1) NOT NULL,
+    [FName]   NCHAR(20)     NULL,
+    [LName]   NCHAR(20)     NULL,
+	[DOB]     DATETIME       NULL,
+	[Email]   NVARCHAR (MAX) NULL,
+	[PwdHash] NVARCHAR (MAX) NULL,
+    [PwdSalt] NVARCHAR (MAX) NULL,
+    [CCNo]  NVARCHAR (MAX) NULL,
+    [CCExpDate]  DATETIME NULL,
+    [CCCVV]  NVARCHAR(MAX) NULL,
+    [IV]      NVARCHAR (MAX) NULL,
+    [Key]     NVARCHAR (MAX) NULL, 
+    CONSTRAINT [PK_Account] PRIMARY KEY ([Id]),
+);
