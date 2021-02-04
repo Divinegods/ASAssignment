@@ -258,13 +258,13 @@ namespace ASAssignment.Web_Forms
         protected global::System.Web.UI.WebControls.TextBox tb_cccvv;
 
         /// <summary>
-        /// lbl_cccvvchceker control.
+        /// lbl_cccvvchecker control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_cccvvchceker;
+        protected global::System.Web.UI.WebControls.Label lbl_cccvvchecker;
 
         /// <summary>
         /// lbl_checker control.
@@ -283,5 +283,23 @@ namespace ASAssignment.Web_Forms
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_createacc;
+
+        /// <summary>
+        /// btn_login control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_login;
+
+        /// <summary>
+        /// btn_404 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_404;
     }
 }

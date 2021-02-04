@@ -24,16 +24,21 @@
                         <asp:Label ID="lbl_password" runat="server" Text="Password"></asp:Label>
                     </td>
                     <td>
-                        <asp:TextBox ID="tb_password" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="tb_password" runat="server" TextMode="Password"></asp:TextBox>
                     </td>
                 </tr>
                 </table>
             <br />
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
+            <asp:label ID="lbl_message" runat="server" Font-Bold="True" Visible="False"></asp:label>
             <br />
                         <asp:Button ID="btn_login" runat="server" OnClick="btn_login_Click" Text="Login" />
                     <br />
-            <asp:label ID="lbl_message" runat="server" Font-Bold="True"></asp:label>
+                    <br />
+            <asp:Button ID="btn_forgotpassword" runat="server" OnClick="btn_forgotpassword_Click" Text="Forgot Password" />
+            <br />
+            <br />
+            <asp:Button ID="btn_register" runat="server" OnClick="lbl_register_Click" Text="Register" />
             <br />
             <%--<asp:Label ID="lbl_gScore" runat="server" Text="Label" Visible="false"></asp:Label>--%>
             <br />

@@ -16,13 +16,7 @@
             var str = document.getElementById('<%=tb_password.ClientID%>').value;
             var password = document.getElementById("tb_password").value;
             var confirm_password = document.getElementById("tb_cfmpassword").value;
-            if (str.length == 0) {
-                document.getElementById("lbl_pwdchecker").innerHTML = "Password cannot be empty";
-                document.getElementById("lbl_pwdchecker").style.color = "Black";
-                return ("empty");
-            }
-            else if (str.length < 8) {
-                //document.getElementById("lbl_pwdchecker").innerHTML = password + confirm_password;
+            if (str.length < 8) {
                 document.getElementById("lbl_pwdchecker").innerHTML = "Password Length Must be at least 8 Characters";
                 document.getElementById("lbl_pwdchecker").style.color = "Red";
                 return ("too_short");
@@ -184,7 +178,7 @@
                         <asp:TextBox ID="tb_cccvv" runat="server" Width="144px"></asp:TextBox>
                     </td>
                     <td style="height: 20px">
-                        <asp:Label ID="lbl_cccvvchceker" runat="server" Font-Bold="True"></asp:Label>
+                        <asp:Label ID="lbl_cccvvchecker" runat="server" Font-Bold="True"></asp:Label>
                     </td>
                 </tr>
             </table>
@@ -192,6 +186,12 @@
             <asp:Label ID="lbl_checker" runat="server" Font-Bold="True"></asp:Label>
             <br />
             <asp:Button ID="btn_createacc" runat="server" Text="Create Account" OnClick="btn_createacc_Click" />
+            <br />
+            <br />
+            <asp:Button ID="btn_login" runat="server" OnClick="btn_login_Click" Text="Login" />
+            <br />
+            <br />
+            <asp:Button ID="btn_404" runat="server" OnClick="btn_404_Click" Text="404" />
         </div>
     </form>
 </body>
