@@ -29,6 +29,10 @@ namespace ASAssignment.Web_Forms
         protected void lbl_reset_Click(object sender, EventArgs e)
         {
             lbl_message.Text = "";
+            lbl_emailchecker.Text = "";
+            lbl_oldpasswordchecker.Text = "";
+            lbl_newpasswordchecker.Text = "";
+            lbl_cfmnewpasswordchecker.Text = "";
             string pwd = tb_oldpassword.Text.ToString().Trim();
             string email = tb_email.Text.ToString().Trim();
             SHA512Managed hashing = new SHA512Managed();
@@ -57,6 +61,12 @@ namespace ASAssignment.Web_Forms
             if (tb_cfmnewpassword.Text.Length == 0)
             {
                 lbl_cfmnewpasswordchecker.Text = "Confirm New Password cannot be empty!";
+            }
+
+            if(tb_newpassword.Text != tb_cfmnewpassword.Text)
+            {
+                lbl_newpasswordchecker.Text = "New Password and Confirm Password must be the same";
+                lbl_cfmnewpasswordchecker.Text = "New Password and Confirm Password must be the same";
             }
 
             if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
@@ -90,31 +100,43 @@ namespace ASAssignment.Web_Forms
                     byte[] hashWithSalts = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalts));
                     finalHash = Convert.ToBase64String(hashWithSalts);
                     //UPDATE INTO HISTORY
-                    //System.Diagnostics.Debug.WriteLine("=" + getPasswordHisory(email) + "=");
-                    if (getPasswordHisory(email) == "" || getPasswordHisory(email).Length == 1)
+                    System.Diagnostics.Debug.WriteLine("=" + getPasswordHisoryId(email) + "=");
+                    if (getPasswordHisoryId(email) == "")
                     {
                         //System.Diagnostics.Debug.WriteLine("Null went through!");
-                        createPasswordHistory(email, getDBSalt(email), getDBHash(email));
+                        int count = 1;
+                        createPasswordHistory(email, getDBSalt(email), getDBHash(email), count);
+                    }
+                    else if (getPasswordHisoryId(email).Length == 1)
+                    {
+                        int count = 2;
+                        createPasswordHistory(email, getDBSalt(email), getDBHash(email), count);
                     }
                     else
                     {
-                        int id1 = Convert.ToInt32(getPasswordHisory(email)[0]);
-                        int id2 = Convert.ToInt32(getPasswordHisory(email)[1]);
+                        int count1 = Convert.ToInt32(getPasswordHisoryCount(email)[0]);
+                        int count2 = Convert.ToInt32(getPasswordHisoryCount(email)[1]);
+                        //int id1 = Convert.ToInt32(getPasswordHisoryId(email)[0]);
+                        //int id2 = Convert.ToInt32(getPasswordHisoryId(email)[1]);
                         string gethash = getDBHash(email);
-                        if (id1 < id2)
+                        if (count1 < count2)
                         {
-                            updatePasswordHistory(id1, gethash);
-                            updatePasswordHistoryCount(id1);
+                            System.Diagnostics.Debug.WriteLine("Hi");
+                            updatePasswordHistory(count1, gethash);
+                            //updatePasswordHistoryCount(count1+2);
+                            updatePasswordHistoryCount(count1);
                         }
 
-                        else if (id1 > id2)
+                        else if (count1 > count2)
                         {
-                            updatePasswordHistory(id2, gethash);
-                            updatePasswordHistoryCount(id2);
+                            System.Diagnostics.Debug.WriteLine("Hello");
+                            updatePasswordHistory(count2, gethash);
+                            updatePasswordHistoryCount(count2+2);
                         }
                     }
                     //UPDATE INTO NEW PASSOWRD
                     updatePwdHash(email, finalHash);
+                    updatePwdMaxAge(email);
                 }
             }
             else
@@ -245,13 +267,25 @@ namespace ASAssignment.Web_Forms
             connection.Close();
         }
 
-        public void createPasswordHistory(string email, string pwdsalt, string pwdhash)
+        public void updatePwdMaxAge(string email)
+        {
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "UPDATE Account SET PwdMaxAge=@PwdMaxAge where Email=@Email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@Email", email);
+            command.Parameters.AddWithValue("@PwdMaxAge", DateTime.Now.AddMinutes(15));
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public void createPasswordHistory(string email, string pwdsalt, string pwdhash, int count)
         {
             try
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO PasswordHistory VALUES(@Email, @PwdSalt, @PwdHash)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO PasswordHistory VALUES(@Email, @PwdSalt, @PwdHash, @Count)"))
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
                         {
@@ -259,6 +293,7 @@ namespace ASAssignment.Web_Forms
                             cmd.Parameters.AddWithValue("@Email", email);
                             cmd.Parameters.AddWithValue("@PwdSalt", pwdsalt);
                             cmd.Parameters.AddWithValue("@PwdHash", pwdhash);
+                            cmd.Parameters.AddWithValue("@Count", count);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -274,31 +309,32 @@ namespace ASAssignment.Web_Forms
             }
         }
 
-        public void updatePasswordHistory(int id, string pwdhash)
+        public void updatePasswordHistory(int count, string pwdhash)
         {
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
-            string sql = "UPDATE PasswordHistory SET PwdHash=@PwdHash where Id=@Id";
+            string sql = "UPDATE PasswordHistory SET PwdHash=@PwdHash where Count=@Count";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@Id", id);
+            command.Parameters.AddWithValue("@Count", count);
             command.Parameters.AddWithValue("@PwdHash", pwdhash);
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();
         }
 
-        public void updatePasswordHistoryCount(int id)
+        public void updatePasswordHistoryCount(int count)
         {
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
-            string sql = "UPDATE PasswordHistory SET Id=@Id where Id=@Id";
+            string sql = "UPDATE PasswordHistory SET Count=@NewCount where Count=@Count";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@Id", id + 2);
+            command.Parameters.AddWithValue("@Count", count);
+            command.Parameters.AddWithValue("@NewCount", count + 2);
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();
         }
 
-        protected string getPasswordHisory(string email)
-        {
+        protected string getPasswordHisoryId(string email)
+        { 
             string h = "";
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "select Id FROM PasswordHistory WHERE Email=@email";
@@ -317,6 +353,40 @@ namespace ASAssignment.Web_Forms
                             if (reader["Id"] != DBNull.Value)
                             {
                                 h += reader["Id"].ToString();
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return h;
+        }
+
+        protected string getPasswordHisoryCount(string email)
+        {
+            string h = "";
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select Count FROM PasswordHistory WHERE Email=@email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@email", email);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+
+                    while (reader.Read())
+                    {
+                        if (reader["Count"] != null)
+                        {
+                            if (reader["Count"] != DBNull.Value)
+                            {
+                                h += reader["Count"].ToString();
                             }
                         }
                     }
