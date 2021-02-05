@@ -17,12 +17,48 @@ namespace ASAssignment.Web_Forms
     public partial class Login1 : System.Web.UI.Page
     {
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["MyWeBB"].ConnectionString;
+
+        /*public class MyObject
+        {
+            public string success { get; set; }
+            public List<string> ErrorMessage { get; set; }
+        }
+        public bool ValidateCaptcha()
+        {
+            bool result = true;
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://www.google.com/recaptcha/api/siteverify?secret=6LfTH0UaAAAAAPQLaqFY42QkbQJ1oYWEDAZcF01U &response=" + captchaResponse);
+
+            try
+            {
+                using (WebResponse wResponse = req.GetResponse())
+                {
+                    using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
+                    {
+                        string jsonResponse = readStream.ReadToEnd();
+                        lbl_gScore.Text = jsonResponse.ToString();
+
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        MyObject jsonObject = js.Deserialize<MyObject>(jsonResponse);
+                        result = Convert.ToBoolean(jsonObject.success);
+                    }
+                }
+                return result;
+            }
+            catch (WebException ex)
+            {
+                throw ex;
+            }
+        }*/
+
         protected void Page_Load(object sender, EventArgs e)
         {
             lbl_message.ForeColor = Color.Red;
         }
         protected void btn_login_Click(object sender, EventArgs e)
         {
+            // if(ValidateCaptcha())
+            //{
             lbl_message.Text = "";
             string pwd = tb_password.Text.ToString().Trim();
             string email = tb_email.Text.ToString().Trim();
@@ -108,6 +144,7 @@ namespace ASAssignment.Web_Forms
                 throw new Exception(ex.ToString());
             }
             finally { }
+            //}
         }
 
         protected void btn_forgotpassword_Click(object sender, EventArgs e)
